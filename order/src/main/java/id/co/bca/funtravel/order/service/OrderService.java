@@ -23,10 +23,14 @@ public class OrderService implements IOrderService{
     public OrderDTO create(OrderDTO orderDTO) {
         orderDTO.setCreatedDate(Timestamp.from(Instant.now()));
         orderDTO.setUpdatedDate(Timestamp.from(Instant.now()));
-
+        //set total dari hasil perhitungan discount (%) dengan price
+        orderDTO.setTotal(calcTotal(orderDTO.getDiscount(), orderDTO.getPrice()));
+        
         Order order = new Order();
+
         BeanUtils.copyProperties(orderDTO, order);
-        return new OrderDTO(order.getIdOrder(), orderDTO.getIdProduct(), order.getPrice(), order.getStatus(), order.getCreatedDate(), order.getUpdatedDate());
+
+        return new OrderDTO(order.getIdOrder(), order.getIdCustomer(), orderDTO.getIdProduct(), orderDTO.getProductName(), orderDTO.getPrice(), orderDTO.getDiscount(), order.getTotal(), order.getStatus(), order.getCreatedDate(), order.getUpdatedDate());
     }
 
     @Override
@@ -37,7 +41,7 @@ public class OrderService implements IOrderService{
             orderDTO.setUpdatedDate(Timestamp.from(Instant.now()));
             BeanUtils.copyProperties(orderDTO, order);
             orderRepo.save(order.get());
-            return new OrderDTO(order.get().getIdOrder(), order.get().getIdProduct(), order.get().getPrice(), order.get().getStatus(), order.get().getCreatedDate(), order.get().getUpdatedDate());
+            return new OrderDTO(order.get().getIdOrder(), order.get().getIdCustomer(), orderDTO.getIdProduct(), orderDTO.getProductName(), orderDTO.getPrice(), orderDTO.getDiscount(), order.get().getTotal(), order.get().getStatus(), order.get().getCreatedDate(), order.get().getUpdatedDate());
         }
         else {
             return null;
@@ -49,7 +53,7 @@ public class OrderService implements IOrderService{
         List<Order> orders = orderRepo.findAll();
         List<OrderDTO> orderDTOList = new ArrayList<>();
         for (Order order : orders) {
-            orderDTOList.add(new OrderDTO(order.getIdOrder(), order.getIdProduct(), order.getPrice(), order.getStatus(), order.getCreatedDate(), order.getUpdatedDate()));
+            orderDTOList.add(new OrderDTO(order.getIdOrder(), order.getIdCustomer(), order.getIdProduct(), null, order.getPrice(), order.getDiscount(), order.getTotal(), order.getStatus(), order.getCreatedDate(), order.getUpdatedDate()));
         }
         return orderDTOList;
     }
@@ -61,7 +65,7 @@ public class OrderService implements IOrderService{
             return null;
         }
         else {
-            return new OrderDTO(order.get().getIdOrder(), order.get().getIdProduct(), order.get().getPrice(), order.get().getStatus(), order.get().getCreatedDate(), order.get().getUpdatedDate());
+            return new OrderDTO(order.get().getIdOrder(), order.get().getIdCustomer(), order.get().getIdProduct(), "productName", order.get().getPrice(), order.get().getDiscount(), order.get().getTotal(), order.get().getStatus(), order.get().getCreatedDate(), order.get().getUpdatedDate());
         }
 
     }
@@ -79,5 +83,10 @@ public class OrderService implements IOrderService{
         else {
             return null;
         }
+    }
+    
+    
+    private Double calcTotal (Double discount, Double price){
+        return (discount / 100) * price;
     }
 }

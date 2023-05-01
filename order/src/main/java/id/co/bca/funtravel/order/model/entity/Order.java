@@ -18,10 +18,19 @@ public class Order {
     private Integer idOrder;
 
     @Column
-    private Integer idProduct;
+    private Integer idCustomer;
 
     @Column
-    private Float price;
+    private Integer idProduct;
+
+    @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
+    private Double discount;
+
+    @Column
+    private Double total;
 
     @Column
     private Integer status;

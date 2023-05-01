@@ -11,8 +11,12 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class OrderDTO {
     private Integer idOrder;
+    private Integer idCustomer;
     private Integer idProduct;
-    private Float price;
+    private String productName;
+    private Double price;
+    private Double discount;
+    private Double total;
     private Integer status;
     private Timestamp createdDate;
     private Timestamp updatedDate;
