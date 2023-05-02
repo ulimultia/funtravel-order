@@ -1,20 +1,30 @@
 package id.co.bca.funtravel.order.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import id.co.bca.funtravel.order.model.dto.OrderDTO;
+import id.co.bca.funtravel.order.model.dto.ProductDTO;
 import id.co.bca.funtravel.order.model.dto.StatusMessageDTO;
 import id.co.bca.funtravel.order.service.IOrderService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/order")
 public class OrderController {
     @Autowired
     private IOrderService iOrderService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllOrder(){
@@ -44,6 +54,7 @@ public class OrderController {
         try {
             StatusMessageDTO<OrderDTO> response = new StatusMessageDTO<>();
             OrderDTO orderDTO = iOrderService.getById(id);
+
             if(orderDTO == null){
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 response.setMessage("Data tidak ditemukan!");
@@ -51,10 +62,33 @@ public class OrderController {
                 return ResponseEntity.badRequest().body(response);
             }
             else {
-                response.setStatus(HttpStatus.OK.value());
-                response.setMessage("Data ditemukan!");
-                response.setData(orderDTO);
-                return ResponseEntity.ok().body(response);
+//                try {
+                    //get product
+//                    String uri = "http://localhost:8080/api/v1/product/id/" + orderDTO.getIdProduct();
+//                    System.out.println("uri: \n" +uri);
+//                    HttpHeaders headers = new HttpHeaders();
+//                    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//                    HttpEntity <StatusMessageDTO> productResp = new HttpEntity<StatusMessageDTO>(headers);
+//                    StatusMessageDTO<ProductDTO> tempDTO = restTemplate.exchange(uri, HttpMethod.GET, productResp, StatusMessageDTO.class).getBody();
+//                    ProductDTO productDTO = new ProductDTO();
+//                    BeanUtils.copyProperties(tempDTO.getData(), productDTO);
+//                    System.out.println(productDTO);
+//
+//                    if (!productResp.hasBody()){
+//                        response.setStatus(HttpStatus.BAD_REQUEST.value());
+//                        response.setMessage("Data tidak valid!");
+//                        response.setData(orderDTO);
+//                        return ResponseEntity.badRequest().body(response);
+//                    }
+//                    else {
+                        response.setStatus(HttpStatus.OK.value());
+                        response.setMessage("Data ditemukan!");
+                        response.setData(orderDTO);
+                        return ResponseEntity.ok().body(response);
+//                    }
+//                } catch (Exception e){
+//                    return ResponseEntity.badRequest().body(e);
+//                }
             }
         }
         catch (Exception e) {
@@ -67,6 +101,7 @@ public class OrderController {
         try {
             StatusMessageDTO<OrderDTO> response = new StatusMessageDTO<>();
             OrderDTO newOrderDTO = iOrderService.create(orderDTO);
+
             response.setStatus(HttpStatus.CREATED.value());
             response.setMessage("Data berhasil diinputkan!");
             response.setData(newOrderDTO);
@@ -122,4 +157,6 @@ public class OrderController {
             return ResponseEntity.badRequest().body(e);
         }
     }
+
+
 }
