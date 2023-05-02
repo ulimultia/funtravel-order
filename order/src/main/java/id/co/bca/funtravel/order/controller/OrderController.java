@@ -62,33 +62,33 @@ public class OrderController {
                 return ResponseEntity.badRequest().body(response);
             }
             else {
-                try {
+//                try {
                     //get product
-                    String uri = "http://localhost:8080/api/v1/product/id/" + orderDTO.getIdProduct();
-                    System.out.println("uri: \n" +uri);
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-                    HttpEntity <StatusMessageDTO> productResp = new HttpEntity<StatusMessageDTO>(headers);
-                    StatusMessageDTO<ProductDTO> tempDTO = restTemplate.exchange(uri, HttpMethod.GET, productResp, StatusMessageDTO.class).getBody();
-                    ProductDTO productDTO = new ProductDTO();
-                    BeanUtils.copyProperties(tempDTO.getData(), productDTO);
-                    System.out.println(productDTO);
-
-                    if (!productResp.hasBody()){
-                        response.setStatus(HttpStatus.BAD_REQUEST.value());
-                        response.setMessage("Data tidak valid!");
-                        response.setData(orderDTO);
-                        return ResponseEntity.badRequest().body(response);
-                    }
-                    else {
+//                    String uri = "http://localhost:8080/api/v1/product/id/" + orderDTO.getIdProduct();
+//                    System.out.println("uri: \n" +uri);
+//                    HttpHeaders headers = new HttpHeaders();
+//                    headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+//                    HttpEntity <StatusMessageDTO> productResp = new HttpEntity<StatusMessageDTO>(headers);
+//                    StatusMessageDTO<ProductDTO> tempDTO = restTemplate.exchange(uri, HttpMethod.GET, productResp, StatusMessageDTO.class).getBody();
+//                    ProductDTO productDTO = new ProductDTO();
+//                    BeanUtils.copyProperties(tempDTO.getData(), productDTO);
+//                    System.out.println(productDTO);
+//
+//                    if (!productResp.hasBody()){
+//                        response.setStatus(HttpStatus.BAD_REQUEST.value());
+//                        response.setMessage("Data tidak valid!");
+//                        response.setData(orderDTO);
+//                        return ResponseEntity.badRequest().body(response);
+//                    }
+//                    else {
                         response.setStatus(HttpStatus.OK.value());
                         response.setMessage("Data ditemukan!");
                         response.setData(orderDTO);
                         return ResponseEntity.ok().body(response);
-                    }
-                } catch (Exception e){
-                    return ResponseEntity.badRequest().body(e);
-                }
+//                    }
+//                } catch (Exception e){
+//                    return ResponseEntity.badRequest().body(e);
+//                }
             }
         }
         catch (Exception e) {
@@ -100,19 +100,6 @@ public class OrderController {
     public ResponseEntity<?> addOrder(@RequestBody OrderDTO orderDTO){
         try {
             StatusMessageDTO<OrderDTO> response = new StatusMessageDTO<>();
-
-            //get product
-            RestTemplate restTemplate = new RestTemplate();
-            String uri = "http://localhost:8080/api/v1/product/id/" + orderDTO.getIdProduct();
-
-            StatusMessageDTO<ProductDTO> productResp = restTemplate.getForObject(uri, StatusMessageDTO.class);
-            ProductDTO productDTO = productResp.getData();
-
-            //set product to OrderDTO
-            orderDTO.setProductName(productDTO.getProductName());
-            orderDTO.setPrice(productDTO.getPrice());
-            orderDTO.setDiscount(productDTO.getDiscount());
-
             OrderDTO newOrderDTO = iOrderService.create(orderDTO);
 
             response.setStatus(HttpStatus.CREATED.value());
